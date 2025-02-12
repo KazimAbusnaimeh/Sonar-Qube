@@ -1,4 +1,4 @@
-name: SonarQube Analysis
+name: SonarCloud Analysis
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
   checks: write  
 
 jobs:
-  Analysis:
+  sonarcloud:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,42 +23,35 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
-          distribution: 'temurin'
-          java-version: '17'
+        distribution: 'temurin'
+        java-version: '17'
 
-    - name: Start SonarQube
-      run: |
-        docker run -d --name sonarqube -p 9000:9000 \
-          -v sonarqube_data:/opt/sonarqube/data \
-          -v sonarqube_extensions:/opt/sonarqube/extensions \
-          -v sonarqube_logs:/opt/sonarqube/logs \
-          sonarqube:lts
-        sleep 90  # Allow SonarQube to fully start
-
-    - name: Wait for SonarQube to Start
-      run: |
-        echo "Waiting for SonarQube to be available..."
-        until curl -s http://localhost:9000/api/system/status | grep -q "UP"; do
-          sleep 5
-        done
-        echo "SonarQube is running!"
-
-    - name: Set up SonarQube Project
-      run: |
-        curl -X POST -u admin:admin "http://localhost:9000/api/projects/create" \
-        -d "project=sonarqude&name=Sonarqude"
-
-    - name: Analyze with SonarQube
-      uses: SonarSource/sonarqube-scan-action@v1.1.0
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-          SONAR_TOKEN: "Kazimnotmalik123&"
-          SONAR_HOST_URL: "http://localhost:9000"
+    - name: Cache SonarCloud Packages
+      uses: actions/cache@v3
       with:
-          args: >
-            -Dsonar.projectKey=sonarqude
-            -Dsonar.projectName=sonarqude
-            -Dsonar.host.url=http://localhost:9000
-            -Dsonar.language=kotlin
-            -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.sources=src/main/
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache Gradle Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: gradle-${{ runner.os }}
+
+    - name: Grant Execute Permission for Gradle
+      run: chmod +x gradlew
+
+    - name: Analyze with SonarCloud
+      uses: SonarSource/sonarcloud-github-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORG }}
+          -Dsonar.projectKey=sonarqude
+          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+          -Dsonar.language=kotlin
+          -Dsonar.sourceEncoding=UTF-8
+          -Dsonar.sources=src/main/
