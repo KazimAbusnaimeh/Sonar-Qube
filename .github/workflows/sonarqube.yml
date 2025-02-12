@@ -57,7 +57,8 @@ jobs:
             # mandatory
             -Dsonar.projectKey=sonarqude
             -Dsonar.projectName=sonarqude
-            -Dsonar.host.url=http://localhost:9000
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.language=kotlin
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.sources=src/main/
