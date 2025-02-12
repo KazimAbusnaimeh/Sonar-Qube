@@ -1,4 +1,4 @@
-name: SonarQube analysis
+name: SonarQube Analysis
 
 on:
   push:
@@ -25,18 +25,40 @@ jobs:
       with:
           distribution: 'temurin'
           java-version: '17'
-          
+
+    - name: Start SonarQube
+      run: |
+        docker run -d --name sonarqube -p 9000:9000 \
+          -v sonarqube_data:/opt/sonarqube/data \
+          -v sonarqube_extensions:/opt/sonarqube/extensions \
+          -v sonarqube_logs:/opt/sonarqube/logs \
+          sonarqube:lts
+        sleep 90  # Allow SonarQube to fully start
+
+    - name: Wait for SonarQube to Start
+      run: |
+        echo "Waiting for SonarQube to be available..."
+        until curl -s http://localhost:9000/api/system/status | grep -q "UP"; do
+          sleep 5
+        done
+        echo "SonarQube is running!"
+
+    - name: Set up SonarQube Project
+      run: |
+        curl -X POST -u admin:admin "http://localhost:9000/api/projects/create" \
+        -d "project=sonarqude&name=Sonarqude"
+
     - name: Analyze with SonarQube
       uses: SonarSource/sonarqube-scan-action@v1.1.0
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: "http://localhost:9000"
       with:
           args: >
             -Dsonar.projectKey=sonarqude
             -Dsonar.projectName=sonarqude
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.host.url=http://localhost:9000
             -Dsonar.language=kotlin
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.sources=src/main/
