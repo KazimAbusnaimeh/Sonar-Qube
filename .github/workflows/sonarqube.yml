@@ -51,15 +51,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on SonarQube, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}   # add the URL of your instance to the secrets of this repo with the name SONAR_HOST_URL (Settings > Secrets > Actions > add new repository secret)
         with:
-          # Additional arguments for the sonarcloud scanner
-          args:
-            # Unique key of your project. You can find it in SonarQube > [my project] > Project Information (top-right menu)
-            # mandatory
-            -Dsonar.projectKey="your-correct-project-key" \
-            -Dsonar.organization="your-organization-name" \
-            -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            -Dsonar.language="kotlin" \
-            -Dsonar.sourceEncoding="UTF-8" \
-            -Dsonar.sources="src/main/" \
+          args: >
+            -Dsonar.projectKey=your-correct-project-key
+            -Dsonar.organization=your-organization-name
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.language=kotlin
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.sources=src/main/
             -Dsonar.verbose=true
