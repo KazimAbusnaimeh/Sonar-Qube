@@ -24,14 +24,6 @@ jobs:
           distribution: 'temurin' 
           java-version: '17'
 
-      - name: Install SonarScanner
-        run: |
-         SONAR_SCANNER_VERSION=$(curl -s https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/ | grep -o 'sonar-scanner-cli-[0-9.]\+-linux.zip' | sort -V | tail -n 1)
-         curl -LsS "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$SONAR_SCANNER_VERSION" -o sonar-scanner.zip
-         unzip sonar-scanner.zip
-         mv sonar-scanner-cli-* /opt/sonar-scanner
-         echo "/opt/sonar-scanner/bin" >> $GITHUB_PATH
-
 
       - name: Verify Java Version
         run: java -version
