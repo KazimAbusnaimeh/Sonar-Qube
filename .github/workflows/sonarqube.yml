@@ -24,8 +24,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set Java 17 as default
-        run: echo "JAVA_HOME=$(which java)" >> $GITHUB_ENV
+      - name: Install JDK 17
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
 
       - name: Verify Java Version
         run: java -version
@@ -36,7 +40,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}  
-          JAVA_HOME: ${{ env.JAVA_HOME }}   # Ensure SonarQube uses Java 17
         with:
           args:
             -Dsonar.projectKey="sonarqude"
