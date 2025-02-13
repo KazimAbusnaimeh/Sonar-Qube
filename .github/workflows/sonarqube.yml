@@ -20,6 +20,9 @@ jobs:
         with:
           distribution: 'temurin' 
           java-version: '17'
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
           
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@v1.1.0
