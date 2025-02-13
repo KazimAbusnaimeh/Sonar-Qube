@@ -47,14 +47,16 @@ jobs:
 
       - name: Run SonarScanner
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          /opt/sonar-scanner/bin/sonar-scanner \
-            -Dsonar.projectKey="sonarqude" \
-            -Dsonar.projectName="sonarqude" \
-            -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            -Dsonar.language="kotlin" \
-            -Dsonar.sourceEncoding="UTF-8" \
-            -Dsonar.sources="src/main/"
+         /opt/sonar-scanner/bin/sonar-scanner \
+         -Dsonar.projectKey="your-correct-project-key" \
+         -Dsonar.organization="your-organization-name" \
+         -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
+         -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+         -Dsonar.language="kotlin" \
+         -Dsonar.sourceEncoding="UTF-8" \
+         -Dsonar.sources="src/main/" \
+         -Dsonar.verbose=true
+
