@@ -24,17 +24,33 @@ jobs:
           distribution: 'temurin' 
           java-version: '17'
 
+      - name: Install Required Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y unzip curl
+
+      - name: Install SonarScanner
+        run: |
+          SONAR_SCANNER_VERSION="5.0.1.3006"
+          curl -LsS "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip" -o sonar-scanner.zip
+          unzip sonar-scanner.zip
+          sudo mv sonar-scanner-$SONAR_SCANNER_VERSION-linux /opt/sonar-scanner
+          sudo chmod +x /opt/sonar-scanner/bin/sonar-scanner
+          echo "export PATH=/opt/sonar-scanner/bin:$PATH" >> ~/.bashrc
+          echo "/opt/sonar-scanner/bin" >> $GITHUB_PATH
 
       - name: Verify Java Version
         run: java -version
 
-      - name: Analyze with SonarQube
-        uses: SonarSource/sonarqube-scan-action@v1.1.0
+      - name: Verify SonarScanner Installation
+        run: /opt/sonar-scanner/bin/sonar-scanner --version
+
+      - name: Run SonarScanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args:
+        run: |
+          /opt/sonar-scanner/bin/sonar-scanner \
             -Dsonar.projectKey="sonarqude" \
             -Dsonar.projectName="sonarqude" \
             -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
