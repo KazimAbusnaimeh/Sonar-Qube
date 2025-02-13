@@ -28,12 +28,13 @@ jobs:
       - name: Verify Java Version
         run: java -version
 
-      - name: Run SonarScanner
+      - name: Analyze with SonarQube
+        uses: SonarSource/sonarqube-scan-action@v1.1.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          /opt/sonar-scanner/bin/sonar-scanner \
+        with:
+          args:
             -Dsonar.projectKey="sonarqude" \
             -Dsonar.projectName="sonarqude" \
             -Dsonar.token="${{ secrets.SONAR_TOKEN }}" \
