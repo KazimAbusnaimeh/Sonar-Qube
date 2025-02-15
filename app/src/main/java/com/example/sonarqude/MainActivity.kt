@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.sonarqude.ui.theme.SonarQudeTheme
 
 class MainActivity : ComponentActivity() {
+    // test pr
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
